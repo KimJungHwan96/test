@@ -7,7 +7,7 @@ module.exports = function (server) {
 
     io.on('connection', function (socket) {
         console.log(socket.id);
-
+        console.log('under connection under socket id');
         socket.on('SEND_MESSAGE', function (data) {
             console.log(data);
             io.in(data.cr_id).emit('RECEIVE_MESSAGE', data);
@@ -18,7 +18,9 @@ module.exports = function (server) {
             //join room
         socket.on('JOIN_ROOM', function (cr_id) {
             chatRoom.find({_id: cr_id }, function(data){
+                console.log('up data')
                 console.log(data);
+                console.log('hello');
             })
             socket.join(cr_id);
         });
