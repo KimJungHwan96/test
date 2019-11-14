@@ -22,6 +22,7 @@ module.exports = function (server) {
                 console.log(data);
                 console.log('hello');
             })
+            console.log('join in the room');
             socket.join(cr_id);
         });
 
