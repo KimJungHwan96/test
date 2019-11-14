@@ -3,9 +3,12 @@ module.exports = function (server) {
     var PopQuiz = require('../../models/popQuiz');
     var chatRoom = require('../../models/chatRoom');
 
-    var clients = [];
-
+   
     io.on('connection', function (socket) {
+
+
+
+
         console.log(socket.id);
         console.log('under connection under socket id');
         socket.on('SEND_MESSAGE', function (data) {
@@ -15,15 +18,44 @@ module.exports = function (server) {
             //socket.broadcast.emit('OTHER_MESSAGE', data); // 본인을 제외한 다른 사람들에게만 메세지 전송함
         });
 
+
+        // socket.on('storeClientInfo', function (data) {
+
+        //     var clientInfo = new Object();
+        //     clientInfo.customId         = data.customId;
+        //     clientInfo.clientId     = socket.id;
+        //     clients.push(clientInfo);
+        // });
+
             //join room
-        socket.on('JOIN_ROOM', function (cr_id) {
-            chatRoom.find({_id: cr_id }, function(data){
-                console.log('up data')
-                console.log(data);
-                console.log('hello');
+        socket.on('JOIN_ROOM', function (data) {
+            
+            var user = 
+            {
+                socket_id : socket.id,
+                email : data.myEmail,
+            };
+
+            chatRoom.findOne({_id: data.cr_id }, function(err, data){
+                //console.log('up data')
+                //console.log(data);
+                //console.log(data.participants);
+                var length = data.participants.length;
+                //socket.join(data.cr_id);
+
+                for(var i = 0; i < length; i++){
+                
+                    if(user.socket_id != data.participants[i].socketID && user.email == data.participants[i].email)
+                    {
+                        user.socket_id = data.participants[i].socketID;
+                        socket.join(data.cr_id);
+                    } else {
+                        socket.join(data.cr_id);
+                    }
+                }
             })
-            console.log('join in the room');
-            socket.join(cr_id);
+
+            //console.log('join in the room');
         });
 
         //leave room
